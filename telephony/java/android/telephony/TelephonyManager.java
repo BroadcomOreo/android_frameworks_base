@@ -4297,48 +4297,19 @@ public class TelephonyManager {
      * @hide
      */
     public static void setTelephonyProperty(int phoneId, String property, String value) {
-        String propVal = "";
-        String p[] = null;
-        String prop = SystemProperties.get(property);
-
-        if (value == null) {
-            value = "";
-        }
-
-        if (prop != null) {
-            p = prop.split(",");
-        }
-
         if (!SubscriptionManager.isValidPhoneId(phoneId)) {
             Rlog.d(TAG, "setTelephonyProperty: invalid phoneId=" + phoneId +
-                    " property=" + property + " value: " + value + " prop=" + prop);
+                    " property=" + property + " value: " + value);
             return;
         }
 
-        for (int i = 0; i < phoneId; i++) {
-            String str = "";
-            if ((p != null) && (i < p.length)) {
-                str = p[i];
-            }
-            propVal = propVal + str + ",";
-        }
-
-        propVal = propVal + value;
-        if (p != null) {
-            for (int i = phoneId + 1; i < p.length; i++) {
-                propVal = propVal + "," + p[i];
-            }
-        }
-
-        if (propVal.length() > SystemProperties.PROP_VALUE_MAX) {
-            Rlog.d(TAG, "setTelephonyProperty: property too long phoneId=" + phoneId +
-                    " property=" + property + " value: " + value + " propVal=" + propVal);
-            return;
+        if (phoneId > 0) {
+            property += "_" + phoneId;
         }
 
         Rlog.d(TAG, "setTelephonyProperty: success phoneId=" + phoneId +
-                " property=" + property + " value: " + value + " propVal=" + propVal);
-        SystemProperties.set(property, propVal);
+                " property=" + property + " value: " + value);
+        SystemProperties.set(property, value);
     }
 
     /**
