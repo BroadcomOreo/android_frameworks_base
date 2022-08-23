@@ -4406,15 +4406,22 @@ public class TelephonyManager {
      * @hide
      */
     public static String getTelephonyProperty(int phoneId, String property, String defaultVal) {
-        String propVal = null;
-        String prop = SystemProperties.get(property);
-        if ((prop != null) && (prop.length() > 0)) {
-            String values[] = prop.split(",");
-            if ((phoneId >= 0) && (phoneId < values.length) && (values[phoneId] != null)) {
-                propVal = values[phoneId];
-            }
+        if (!SubscriptionManager.isValidPhoneId(phoneId)) {
+            Rlog.d(TAG, "getTelephonyProperty: invalid phoneId=" + phoneId +
+                    " property=" + property);
+            return defaultVal;
         }
-        return propVal == null ? defaultVal : propVal;
+
+        if (phoneId > 0) {
+            property += "_" + phoneId;
+        }
+
+        String propVal = SystemProperties.get(property);
+
+        Rlog.d(TAG, "getTelephonyProperty: return propVal='" + propVal + "' phoneId=" + phoneId
+                + " property='" + property + "' defaultVal='" + defaultVal);
+
+        return propVal.isEmpty() ? defaultVal : propVal;
     }
 
     /** @hide */
